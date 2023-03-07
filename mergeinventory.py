@@ -1,85 +1,56 @@
 import pandas as pd
-import numpy as np
 
-# Define a function to read in the inventory files with specified data types
-def read_inventory_file(filename, dtypes):
-    df = pd.read_csv(filename, dtype=dtypes)
-    return df
+# read in all 3 files
+df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
+df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
+df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'UPC':str,'price1':float,'available':int})
+df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float})
 
-# Define a function to merge all dataframes on UPC
-def merge_inventory_dataframes(inventory_dfs):
-    consolidated = pd.concat(inventory_dfs, sort=False)
-    consolidated.drop_duplicates(subset=['UPC'], inplace=True)
-    consolidated.reset_index(drop=True, inplace=True)
-    return consolidated
+# merge all dataframes on UPC
+consolidated = pd.merge(df1, df2, on="UPC", how="outer")
+consolidated = pd.merge(consolidated, df3, on="UPC", how="outer")
+consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC", how="outer")
 
-# Define a function to find the best price and quantities for each UPC
-def get_best_prices_and_quantities(consolidated):
-    # group by UPC and find the lowest price
-    grouped = consolidated.groupby('UPC', as_index=False).agg({
-        'Total': 'max',
-        'Dealer Price': 'min',
-        'Sale Price': 'min',
-        'Q': 'max',
-        'P': 'min',
-        'available': 'max',
-        'price1': 'min',
-        'quantity': 'max',
-        'price': 'min'
-    })
+# remove rows with NaN UPC
+consolidated.dropna(subset=['UPC'], inplace=True)
 
-    # determine which vendor has the lowest price for each UPC
-    min_cols = ['Dealer Price', 'Sale Price', 'P', 'price1', 'price']
-    grouped['Best Price'] = grouped[min_cols].min(axis=1)
+# fill NaN values in quantity and price columns with 0
+cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
+consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
 
-    def best_price_vendor(row):
-        for col in min_cols:
-            if row[col] == row['Best Price']:
-                if col in ['Dealer Price', 'Sale Price']:
-                    return 'Davidsons'
-                elif col == 'P':
-                    return 'SportsSouth'
-                elif col == 'price1':
-                    return 'Zanders'
-                elif col == 'price':
-                    return 'Lipseys'
-        return 'Davidsons'
+# group by UPC and find the lowest price
+grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
 
-    grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
+# determine which vendor has the lowest price for each UPC
+min_cols = ['Dealer Price', 'Sale Price', 'P', 'price1', 'price']
+grouped['Best Price'] = grouped[min_cols].min(axis=1)
 
-    # determine the quantity of the lowest price
-    def best_price_quantity(row):
-        q_col = 'quantity'
-        p_col = 'Best Price'
-        
-        # Check if Quantity and Best Price columns exist in the row
-        if q_col not in row.index or p_col not in row.index:
-            return 0
-        
-        # Calculate the product of Quantity and Best Price
-        q = row[q_col]
-        p = row[p_col]
-        pq = q * p
-        
-        # Check if the result is NaN or infinite
-        if pd.isna(pq) or not np.isfinite(pq):
-            return 0
-        
-        return pq
+def best_price_vendor(row):
+    for col in min_cols:
+        if row[col] == row['Best Price']:
+            if col == 'Dealer Price':
+                return 'Davidsons'
+            elif col == 'Sale Price':
+                return 'Davidsons'
+            elif col == 'P':
+                return 'SportsSouth'
+            elif col == 'price1':
+                return 'Zanders'
+            elif col == 'price':
+                return 'Lipseys'
+    return 'Davidsons'
 
-    grouped['Best Price Quantity'] = grouped.apply(best_price_quantity, axis=1)
-    return grouped
+grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
 
-# Define a function to write the consolidated inventory file
-def write_consolidated_inventory_file(grouped, output_filename):
-    # save new file
-    grouped.to_csv(output_filename, index=False)
+# determine the quantity of the lowest price
+def best_price_quantity(row):
+    for col in min_cols:
+        if row[col] == row['Best Price']:
+            q_col = col[0] + '-Q'
+            return row[q_col]
+    return 0
 
-# Define the main function
-def main():
-    # Define the input file paths and data types
-    inventory_files = [
-        {'filename': './Result/DavidsonsInventory.csv', 'dtypes': {'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float}},
-        {'filename': './Result/SportsSouthInventory.csv', 'dtypes': {'UPC': str, 'Q': int, 'P': float}},
-        {'filename': './Result/ZandersInventory.csv', 'dtypes': {'upc':str,'price1':float,'available':int}},
-        {'filename': './Result/Lipseys.csv', 'dtypes': {'upc': str, 'quantity': int, 'price': float}}
+grouped['Best Price Quantity'] = grouped.apply(best_price_quantity, axis=1)
+
+# save new file
+grouped.to_csv('./Result/ConsolidatedInventory.csv', index=False)
