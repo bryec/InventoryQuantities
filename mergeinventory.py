@@ -20,6 +20,8 @@ print("Removing duplicate UPCs and rows with empty UPCs")
 # fill NaN values in quantity and price columns with 0
 cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
 consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
+# Format Quantity column
+consolidated_df['Quantity'] = consolidated_df['Quantity'].apply(lambda x: f'{int(x):,}')
 
 print("Finding the best price and quantities for each UPC")
 # group by UPC and find the lowest price
