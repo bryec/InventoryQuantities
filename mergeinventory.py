@@ -8,9 +8,8 @@ df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'p
 
 # merge all dataframes on UPC
 consolidated = pd.merge(df1, df2, on="UPC", how="outer")
-consolidated = pd.merge(consolidated, df3, on="UPC", how="outer")
+consolidated = pd.merge(consolidated, df3.rename(columns={"upc": "UPC"}), on="UPC", how="outer")
 consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC", how="outer")
-
 # remove rows with NaN UPC
 consolidated.dropna(subset=['UPC'], inplace=True)
 
