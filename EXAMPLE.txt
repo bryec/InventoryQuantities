@@ -1,0 +1,170 @@
+Examples of each of the files downloaded from the different distributors.  This file should be updated as scripts change to reflect the new format for ConsolidatedInventory.csv file
+
+##Davidsons##
+
+Two files are downloaded to create the output file and these are examples from each. - 
+
+davidsons_quantity.csv
+
+Item_Number, UPC_Code, Quantity_NC, Quantity_AZ
+AM568300,810042110618,38,0
+AM768300,810042112186,35,0
+85601-MET,713780856018,14,8
+
+davidsons_inventory.csv
+
+
+Item #, Item Description, MSP, Retail Price, Dealer Price, Sale Price, Sale Ends, Quantity, UPC Code, Manufacturer, Gun Type, Model Series, Caliber, Action, Capacity, Finish,Stock, Sights, Barrel Length, Overall Length, Features
+LA-HBG-24,TPL LG ALUM DAMASCUS TANTO,$199.99,$249.99,$199.99,,,3,##,,,,,,,,,,,,
+SA-FL-22-1,TPL SMA FALLEN TANTO D2,$119.49,$169.99,$119.49,,,4,##,,,,,,,,,,,,
+SA-MDT-32-1,TPL SMA MAIDEN TEAL DROP PT D2,$119.49,$169.99,$119.49,,,3,##,,,,,,,,,,,,
+ATIGFXS917,ATA FXS-9 SA PST 9MM 4B 17RD,$279.95,$349.95,$279.95,,,0,#819644028284#,American Tactical Inc,Pistol: Semi-Auto,FXS,9MM,Single Action,17+1,Matte Black,Polymer w/Interchangeable Backstrap (S/M/L),Front:  Rear: Drift Adjustable,4.1,7.45,Ambidextrous Magazine Release
+ATIGFXH45,ATA FX45 HBRD 1911 45AP 5B 8RD,$454.95,$599.95,$454.95,,,0,#813393018497#,American Tactical Inc,Pistol: Semi-Auto,FX45|1911,45AP,Single Action,8+1,Matte Black,Polymer Frame W/ Finger Grooves,Front: Hi-Viz Rear: Serrated Black Fixed,5,8.46,Polymer Frame W/ 2 Metal Inserts
+ATIGFXH45M,ATA FX45 MOXI 1911 45AP 5B 8RD,$359.95,$459.95,$359.95,,,0,#819644025399#,American Tactical Inc,Pistol: Semi-Auto,FXH45|1911,45AP,Single Action,8+1,Matte Black,Polymer Frame W/ Finger Grooves/4140 Slide,Fixed /Accepts Glock Sights,5,8.46,Polymer Frame W/ 2 Metal Inserts/4140 Slide
+
+Output file - DavidsonsInventory.csv
+
+UPC,Item_Number,Quantity_NC,Quantity_AZ,Total,Dealer Price,Sale Price
+810042110618,AM568300,38,0,38,29.99,
+810042112186,AM768300,35,0,35,22.99,
+713780856018,85601-MET,14,8,22,549.99,
+713780856025,85602,0,0,0,619.99,
+713780856049,85604,2,0,2,549.99,
+713780856056,85605,0,0,0,619.99,
+713780856070,85607,0,0,0,549.99,
+713780856087,85608,0,0,0,619.99,
+713780856100,85610,13,49,62,579.99,
+
+##Lipsey’s##
+
+Source File Format - Lipseys.csv
+
+itemNumber,upc,mfgModelNumber,quantity,allocated,onSale,price,currentPrice,retailMap
+SI365XCA9COMP,798681669981,365XCA-9-COMP,100,False,False,697.0,697.0,799.99
+AITIWST4642A,658175115120,TIWST4642A,0,False,False,2758.7,2758.7,3299.0
+BEJ131C14N,082442884752,J131C14N,0,True,False,1120.0,1120.0,1349.0
+BGBPR2065MCHB,043125065172,BPR20-65MCHB,0,False,False,1369.24,1369.24,1649.99
+BGBPR22300PRCF,043125300211,BPR22-300PRCF,0,False,False,1840.43,1840.43,2149.99
+BGBPR2265F,043125065127,BPR22-65F,0,False,False,1785.0,1785.0,2099.99
+BGBPR2265PRCF,043125065134,BPR22-65PRCF,0,False,False,1840.43,1840.43,2149.99
+BL410200BKR,604544648065,410200BKR,10,False,False,38.69,38.69,0.0
+BL410261BKR,604544648089,410261BKR,3,False,False,38.69,38.69,0.0
+
+Output File Format - ./Results/Lipseys.csv
+
+itemNumber,upc,mfgModelNumber,quantity,allocated,onSale,price,currentPrice,retailMap
+SI365XCA9COMP,798681669981,365XCA-9-COMP,100,False,False,697.0,697.0,799.99
+AITIWST4642A,658175115120,TIWST4642A,0,False,False,2758.7,2758.7,3299.0
+BEJ131C14N,082442884752,J131C14N,0,True,False,1120.0,1120.0,1349.0
+BGBPR2065MCHB,043125065172,BPR20-65MCHB,0,False,False,1369.24,1369.24,1649.99
+BGBPR22300PRCF,043125300211,BPR22-300PRCF,0,False,False,1840.43,1840.43,2149.99
+BGBPR2265F,043125065127,BPR22-65F,0,False,False,1785.0,1785.0,2099.99
+BGBPR2265PRCF,043125065134,BPR22-65PRCF,0,False,False,1840.43,1840.43,2149.99
+BL410200BKR,604544648065,410200BKR,10,False,False,38.69,38.69,0.0
+BL410261BKR,604544648089,410261BKR,3,False,False,38.69,38.69,0.0
+
+
+##Zanders##
+
+Source file - zandersinv.csv
+
+available,category,desc1,desc2,itemnumber,manufacturer,mfgpnumber,msrp,price1,price2,price3,qty1,qty2,qty3,upc,weight,serialized,mapprice
+"0","RECOIL PADS","PACHMAYR RECOIL PAD F325 LARGE","WHITE LINE BLACK","00001","Pachmayr","00001","38.98","22.66","","","1","","","034337000013","0.470","NO",""
+"1","RECOIL PADS","PACHMAYR RECOIL PAD F325 LARGE","WHITE LINE BROWN","00002","Pachmayr","00002","38.98","22.66","","","1","","","034337000020","0.505","NO",""
+"0","RECOIL PADS","PACHMAYR RECOIL PAD F325","MEDIUM WHITE LINE BLACK","00006","Pachmayr","00006","38.98","22.66","","","1","","","034337000068","0.430","NO",""
+"0","RECOIL PADS","PACHMAYR RECOIL PAD F325","MEDIUM WHITE LINE BROWN","00007","Pachmayr","00007","38.98","22.66","","","1","","","034337000075","0.435","NO",""
+"12","RECOIL PADS","PACHMAYR RECOIL PAD F325 SMALL","WHITE LINE BLACK","00010","Pachmayr","00010","38.98","22.66","","","1","","","034337000105","0.405","NO",""
+"6","RECOIL PADS","PACHMAYR RECOIL PAD F325 SMALL","WHITE LINE BROWN","00011","Pachmayr","00011","38.98","22.66","","","1","","","034337000112","0.385","NO",""
+"2559","MAGAZINES (REPLACEMENT)","BERETTA MAGAZINE 96F/96G 40SW","11RD BLUED STEEL(SURPLUS)","00012297","Beretta","00012297","32","9.95","","","1","","","","0.200","NO",""
+"3","SNAP CAPS","CARLSONS SNAP CAP 17HMR","ALUMINUM 6PK","00048","Carlson","00048","12.95","7.92","","","1","","","723189000486","0.100","NO",""
+"19","SNAP CAPS","CARLSONS SNAP CAP .45LONG COLT","ALUMINUM 6PK","00049","Carlson","00049","26.95","17.88","","","1","","","723189000493","0.210","NO",""
+
+Output File - ZandersInventory.csv
+
+upc,msrp,price1,available
+034337000013,38.98,22.66,0
+034337000020,38.98,22.66,1
+034337000068,38.98,22.66,0
+034337000075,38.98,22.66,0
+034337000105,38.98,22.66,12
+034337000112,38.98,22.66,6
+nan,32.0,9.95,2559
+723189000486,12.95,7.92,3
+723189000493,26.95,17.88,19
+
+## SportsSouth ##
+
+The following XML file is downloaded - 
+
+SportsSouth SportsSouthInventory.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<DataSet xmlns="http://webservices.theshootingwarehouse.com/smart/Inventory.asmx">
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Table">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="I" type="xs:int" minOccurs="0" />
+                <xs:element name="Q" type="xs:decimal" minOccurs="0" />
+                <xs:element name="P" type="xs:decimal" minOccurs="0" />
+                <xs:element name="C" type="xs:decimal" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <NewDataSet xmlns="">
+      <Table diffgr:id="Table1" msdata:rowOrder="0">
+        <I>120</I>
+        <Q>39</Q>
+        <P>40.35</P>
+        <C>40.35</C>
+      </Table>
+      <Table diffgr:id="Table2" msdata:rowOrder="1">
+        <I>137</I>
+        <Q>31</Q>
+        <P>57.59</P>
+        <C>57.59</C>
+      </Table>
+      <Table diffgr:id="Table3" msdata:rowOrder="2">
+        <I>144</I>
+        <Q>0</Q>
+        <P>1344.78</P>
+        <C>1344.78</C>
+      </Table>
+
+
+
+
+Output File - ./Results/SportsSouthInventory.csv
+
+I,Q,P,UPC
+144,0,1344.78,602686441001
+145,0,1701.15,602686441100
+219,0,366.96,744253002694
+220,0,366.15,744253002700
+265,0,612.16,048702005947
+324,0,612.16,048702005923
+325,13,653.04,048702005930
+347,25,675.0,736676085026
+348,0,860.44,619835016379
+
+
+The scripts produce an output file named ConsolidatedInventory.csv.  This file is read in by the Wordpress application WP-Import to update the pricing and inventory availability of each of the items.
+
+UPC,D-Q,D-P,D-SP,S-Q,S-P,Z-Q,Z-P,L-Q,L-P,Best Price,Best Price Vendor,Best Price Quantity
+810042110618,38.0,29.99,,,,,,97.0,30.35,29.99,Davidsons,38.0
+810042112186,35.0,22.99,,,,,,,,22.99,Davidsons,35.0
+713780856018,22.0,549.99,,25.0,499.0,,,8.0,521.72,499.0,SportsSouth,25.0
+713780856025,0.0,619.99,,0.0,599.99,,,0.0,586.94,586.94,Davidsons,0.0
+713780856049,2.0,549.99,,19.0,533.32,,,12.0,521.72,521.72,Lipseys,12.0
+713780856056,0.0,619.99,,0.0,599.99,,,0.0,586.94,586.94,Davidsons,0.0
+713780856070,0.0,549.99,,0.0,533.32,,,0.0,521.72,521.72,Davidsons,0.0
+713780856087,0.0,619.99,,0.0,599.99,,,0.0,586.94,586.94,Davidsons,0.0
+713780856100,62.0,579.99,,25.0,566.66,,,7.0,554.34,554.34,Lipseys,7.0
