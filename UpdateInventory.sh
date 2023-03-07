@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /home/ubuntu/Inventory
+
 python3 Davidsons.py
 python3 SportsSouthInventory.py
 python3 ZandersInventory.py
@@ -16,4 +16,4 @@ rm ./SportsSouthInventory.xml
 rm ./ZandersInventory.csv
 rm ./zandersinv.csv
 rm ./Lipseys.csv
-cp ./Result/ConsolidatedInventory.csv /var/www/html/wp-content/uploads/wpallimport/files/
+
