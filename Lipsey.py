@@ -25,6 +25,7 @@ if response.status_code == 200:
         writer.writeheader()
         for item in items:
             writer.writerow(item)
+        print("Lipsey.csv file created")
 
    
 else:
@@ -33,3 +34,4 @@ else:
 src_path = "./Lipseys.csv"
 dst_path = "./Result/"
 shutil.copy(src_path, dst_path)
+print("Lipsey.csv copied to Result folder.")

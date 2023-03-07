@@ -15,6 +15,7 @@ files = ftp.nlst()
 # Print out the files
 
 print("Downloading...davidsons_quantity.csv")
+print("Downloading...davidsons_inventory.csv")
 ftp.retrbinary("RETR davidsons_quantity.csv" ,open("./davidsons_quantity.csv", 'wb').write)
 ftp.retrbinary("RETR davidsons_inventory.csv" ,open("./davidsons_inventory.csv", 'wb').write)
 
@@ -82,9 +83,11 @@ new_inventory["Sale Price"] = new_inventory["Sale Price"].astype(float)
 
 # Write the new dataframe to a new CSV file
 new_inventory.to_csv("DavidsonsInventory.csv", index=False)
+print("New DavidsonsInventory.csv file created")
 
 
 
 src_path = "./DavidsonsInventory.csv"
 dst_path= "./Result/"
 shutil.copy(src_path, dst_path)
+print("DavidsonsInventory.csv file moved to Result folder")

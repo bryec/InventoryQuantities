@@ -5,18 +5,23 @@ df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total':
 df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
 df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'upc':str,'price1':float,'available':int})
 df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float})
+print("All 4 files read in from Result folder")
 
 # merge all dataframes on UPC
 consolidated = pd.merge(df1, df2, on="UPC", how="outer")
 consolidated = pd.merge(consolidated, df3.rename(columns={"upc": "UPC"}), on="UPC", how="outer")
 consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC", how="outer")
+print("Merging all UPCs into a single file")
+
 # remove rows with NaN UPC
 consolidated.dropna(subset=['UPC'], inplace=True)
+print("Removing duplicate UPCs and rows with empty UPCs")
 
 # fill NaN values in quantity and price columns with 0
 cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
 consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
 
+print("Finding the best price and quantities for each UPC")
 # group by UPC and find the lowest price
 grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
 
@@ -50,6 +55,6 @@ def best_price_quantity(row):
     return 0
 
 grouped['Best Price Quantity'] = grouped.apply(best_price_quantity, axis=1)
-
+print("Writing new file ConsoliidatedInventory.csv")
 # save new file
 grouped.to_csv('./Result/ConsolidatedInventory.csv', index=False)

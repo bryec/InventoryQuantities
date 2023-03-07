@@ -13,6 +13,7 @@ params = {
 }
 
 # Download the XML file
+print("Downloading...SportsSouthInventory.xml")
 response = requests.get(url, params=params)
 with open('SportsSouthInventory.xml', 'wb') as f:
     f.write(response.content)
@@ -32,6 +33,7 @@ for table in root.findall('.//Table'):
 
 
 # Read SS_UPC_Reference.csv and set the 'I' column to integer type
+print("Reading SS_UPC_Reference.csv to match item numbers to UPC")
 upc_ref = pd.read_csv('SS_UPC_Reference.csv', dtype={'I': int, 'UPC':object})
 
 
@@ -44,4 +46,5 @@ if not os.path.exists('Result'):
    os.makedirs('Result')
 
 # Write the merged DataFrame to 'Result/SportsSouthInventory.csv'
+print("New SportsSouthInventory.csv file created in Result folder")
 merged_df.to_csv(r'Result/SportsSouthInventory.csv', index = False, header=True)
