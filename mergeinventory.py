@@ -3,7 +3,7 @@ import pandas as pd
 # read in all 3 files
 df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
 df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
-df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'UPC':str,'price1':float,'available':int})
+df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'upc':str,'price1':float,'available':int})
 df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float})
 
 # merge all dataframes on UPC
