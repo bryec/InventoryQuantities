@@ -48,11 +48,23 @@ grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
 
 # determine the quantity of the lowest price
 def best_price_quantity(row):
-    for col in min_cols:
-        if row[col] == row['Best Price']:
-            q_col = col[0] + '-Q'
-            return row[q_col]
-    return 0
+    q_col = 'Quantity'
+    p_col = 'Price'
+    
+    # Check if Quantity and Price columns exist in the row
+    if q_col not in row.index or p_col not in row.index:
+        return 0
+    
+    # Calculate the product of Quantity and Price
+    q = row[q_col]
+    p = row[p_col]
+    pq = q * p
+    
+    # Check if the result is NaN or infinite
+    if pd.isna(pq) or not np.isfinite(pq):
+        return 0
+    
+    return pq
 
 grouped['Best Price Quantity'] = grouped.apply(best_price_quantity, axis=1)
 print("Writing new file ConsoliidatedInventory.csv")

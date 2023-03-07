@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -x
+
 
 echo "Executing Davidsons.py"
 python3 Davidsons.py
