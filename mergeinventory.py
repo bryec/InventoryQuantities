@@ -3,7 +3,8 @@ import pandas as pd
 # read in all 3 files
 df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
 df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
-df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'UPC':str,'price1':float,'available':int})
+df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'upc':str,'price1':float,'available':int})
+df3 = df3.rename(columns={'upc': 'UPC'})
 df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float})
 
 # merge all dataframes on UPC
@@ -52,5 +53,9 @@ def best_price_quantity(row):
 
 grouped['Best Price Quantity'] = grouped.apply(best_price_quantity, axis=1)
 
+# format the output
+output = grouped[['UPC', 'Best Price', 'Best Price Vendor', 'Best Price Quantity']]
+output.columns = ['UPC', 'Price', 'Vendor', 'Quantity']
+
 # save new file
-grouped.to_csv('./Result/ConsolidatedInventory.csv', index=False)
+output.to_csv('./Result/ConsolidatedInventory.csv', index=False)
