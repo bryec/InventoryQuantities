@@ -39,7 +39,7 @@ grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Deal
 
 
 # Determine which vendor has the lowest price for each UPC
-grouped['Best Price'] = grouped[['Sale Price', 'P', 'price1', 'price']].replace(0.0, np.nan).min(axis=1)
+grouped['Best Price'] = grouped[['Sale Price', 'P', 'price1', 'price']]
 
 def best_price_vendor(row):
     if row['Sale Price'] == row['Best Price']:
@@ -53,7 +53,7 @@ def best_price_vendor(row):
     return 'Davidsons'
 
 grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
-print(grouped.head(20))
+print(grouped.head(200))
 
 # determine the quantity of the lowest price
 def best_price_quantity(row):
