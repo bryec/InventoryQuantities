@@ -20,5 +20,18 @@ df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'p
 consolidated = pd.merge(df1, df2, on="UPC", how="outer")
 consolidated = pd.merge(consolidated, df3, on="UPC", how="outer")
 consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC", how="outer")
+
+consolidated = consolidated.rename(columns={
+    "Total": "D-Q",
+    "Dealer Price": "D-P",
+    "Sale Price": "D-S",
+    "Q": "S-Q",
+    "P": "S-P",
+    "price1": "Z-P",
+    "available": "Z-Q",
+    "quantity": "L-Q",
+    "price": "L-P"
+})
+
 print(consolidated)
 
