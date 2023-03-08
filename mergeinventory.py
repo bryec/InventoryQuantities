@@ -42,19 +42,21 @@ min_cols = ['Dealer Price', 'Sale Price', 'P', 'price1', 'price']
 grouped['Best Price'] = grouped[min_cols].min(axis=1)
 
 def best_price_vendor(row):
-    for col in min_cols:
-        if row[col] == row['Best Price']:
-            if col == 'Dealer Price':
-                return 'Davidsons'
-            elif col == 'Sale Price':
-                return 'SportsSouth'
-            elif col == 'P':
-                return 'SportsSouth'
-            elif col == 'price1':
-                return 'Zanders'
-            elif col == 'price':
-                return 'Lipseys'
-    return 'Davidsons'
+    best_price = row['Best Price']
+    if best_price == 0:
+        return 'Davidsons'
+    elif best_price == row['Dealer Price']:
+        return 'Davidsons'
+    elif best_price == row['Sale Price']:
+        return 'Davidsons'
+    elif best_price == row['P']:
+        return 'SportsSouth'
+    elif best_price == row['price1']:
+        return 'Zanders'
+    elif best_price == row['price']:
+        return 'Lipseys'
+    else:
+        return 'Davidsons'
 
 grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
 print(grouped.head(20))
