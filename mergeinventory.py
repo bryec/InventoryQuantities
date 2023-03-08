@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # Read in all 4 files
 df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
@@ -9,13 +10,27 @@ df4 = df4.rename(columns={"upc": "UPC"})
 
 
 # Create consolidated dataframe with all UPCs from all vendors
+df1[['Total']] = df1[['Total']].fillna(0).astype(int)
+df2[['Q']] = df2[['Q']].fillna(0).astype(int)
+df2[['P']] = df2[['P']].fillna(0).astype(float)
+df3[['available']] = df3[['available']].fillna(0).astype(int)
+df4[['quantity']] = df4[['quantity']].fillna(0).astype(int)
+
 consolidated = pd.concat([df1['UPC'], df2['UPC'], df3['upc'], df4['UPC']]).drop_duplicates().reset_index(drop=True).to_frame(name='UPC')
 consolidated = consolidated.loc[~consolidated["UPC"].duplicated()]
+
 # Merge in quantity and price information from each vendor
 consolidated = consolidated.merge(df1[['UPC', 'Total', 'Dealer Price', 'Sale Price']], on='UPC', how='left')
 consolidated = consolidated.merge(df2[['UPC', 'Q', 'P']], on='UPC', how='left')
 consolidated = consolidated.merge(df3[['upc', 'price1', 'available']], left_on='UPC', right_on='upc', how='left').drop('upc', axis=1)
 consolidated = consolidated.merge(df4[['UPC', 'quantity', 'currentPrice']], on='UPC', how='left')
+
+# Fix format for quantities to get rid of decimal places
+consolidated['Total'] = consolidated['Total'].apply(lambda x: '{:.0f}'.format(float(x)))
+consolidated['Q'] = consolidated['Q'].apply(lambda x: '{:.0f}'.format(float(x)))
+consolidated['available'] = consolidated['available'].apply(lambda x: '{:.0f}'.format(float(x)))
+consolidated['quantity'] = consolidated['quantity'].apply(lambda x: '{:.0f}'.format(float(x)))
+
 
 # Rename columns
 consolidated = consolidated.rename(columns={
@@ -29,12 +44,15 @@ consolidated = consolidated.rename(columns={
     'quantity': 'L-Q',
     'currentPrice': 'L-P'
 })
+
+
 # Remove duplicate UPCs
 consolidated = consolidated.loc[~consolidated["UPC"].duplicated()]
 
 # Convert quantity columns to numeric
 qty_cols = ['D-Q', 'S-Q', 'Z-Q', 'L-Q']
-consolidated[qty_cols] = consolidated[qty_cols].apply(pd.to_numeric, errors='coerce')
+consolidated[qty_cols] = consolidated[qty_cols].replace(['nan', 'NaN'], np.nan).fillna(0).replace([np.inf, -np.inf], 0).astype(int)
+
 
 # Remove rows with missing UPC values
 consolidated = consolidated.dropna(subset=["UPC"])
@@ -42,7 +60,7 @@ consolidated = consolidated.dropna(subset=["UPC"])
 # Add 3 additional columns: Best Price, Best Price Vendor and Best Price Quantity
 min_cols = ['D-P', 'D-SP', 'S-P', 'Z-P', 'L-P']
 consolidated['Best Price'] = consolidated[min_cols].min(axis=1)
-print(consolidated)
+
 def best_price_vendor(row):
     min_price = row['Best Price']
     min_vendor = ''
@@ -75,7 +93,6 @@ def best_price_quantity(row):
     else:
         vendor_qty = sorted(vendor_qty, key=lambda x: x[1])
         return vendor_qty[0][1]
-
 
 consolidated['Best Price Quantity'] = consolidated.apply(best_price_quantity, axis=1)
 
