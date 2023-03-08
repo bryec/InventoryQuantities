@@ -27,7 +27,9 @@ consolidated.dropna(subset=['UPC'], inplace=True)
 
 # fill NaN values in quantity and price columns with 0
 cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
+cols_to_int = ['Total', 'Q', 'available', 'quantity']
 consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
+consolidated[cols_to_int] = consolidated[cols_to_int].astype(int)
 
 print(consolidated.head(20))
 
