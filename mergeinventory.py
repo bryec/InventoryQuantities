@@ -36,7 +36,7 @@ consolidated[cols_to_int] = consolidated[cols_to_int].astype(int)
 
 
 # group by UPC and find the lowest price
-grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
+grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'min', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
 
 # Determine which vendor has the lowest price for each UPC
 grouped['Best Price'] = grouped[['Sale Price', 'P', 'price1', 'price']].min(skipna=True, axis=1)
