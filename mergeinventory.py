@@ -1,11 +1,19 @@
 import pandas as pd
 
-# read in all 3 files
-df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
-df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
-df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'upc':str,'price1':float,'available':int})
+# read in all 4 files
+df1 = pd.read_csv("./Result/DavidsonsInventory.csv", 
+                  usecols=['UPC', 'Total', 'Dealer Price', 'Sale Price'],
+                  dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
+
+df2 = pd.read_csv("./Result/SportsSouthInventory.csv",
+                  usecols=['UPC', 'Q', 'P'],
+                  dtype={'UPC': str, 'Q': int, 'P': float})
+
+df3 = pd.read_csv("./Result/ZandersInventory.csv", usecols=['upc', 'price1', 'available'], dtype={'upc': str, 'price1': float, 'available': int})
 df3 = df3.rename(columns={'upc': 'UPC'})
-df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float})
+
+df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float}, usecols=['upc', 'quantity', 'price'])
+
 
 # merge all dataframes on UPC
 consolidated = pd.merge(df1, df2, on="UPC", how="outer")
@@ -15,11 +23,13 @@ consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC
 # remove rows with NaN UPC
 consolidated.dropna(subset=['UPC'], inplace=True)
 
-print(consolidated.head(20))
+
 
 # fill NaN values in quantity and price columns with 0
 cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
 consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
+
+print(consolidated.head(20))
 
 # group by UPC and find the lowest price
 grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
