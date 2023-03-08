@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # read in all 4 files
 df1 = pd.read_csv("./Result/DavidsonsInventory.csv", 
