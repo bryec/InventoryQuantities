@@ -1,71 +1,84 @@
 import pandas as pd
-import numpy as np
 
-# read in all 4 files
-df1 = pd.read_csv("./Result/DavidsonsInventory.csv", 
-                  usecols=['UPC', 'Total', 'Dealer Price', 'Sale Price'],
-                  dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
-
-df2 = pd.read_csv("./Result/SportsSouthInventory.csv",
-                  usecols=['UPC', 'Q', 'P'],
-                  dtype={'UPC': str, 'Q': int, 'P': float})
-
-df3 = pd.read_csv("./Result/ZandersInventory.csv", usecols=['upc', 'price1', 'available'], dtype={'upc': str, 'price1': float, 'available': int})
-df3 = df3.rename(columns={'upc': 'UPC'})
-
-df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'price': float}, usecols=['upc', 'quantity', 'price'])
+# Read in all 4 files
+df1 = pd.read_csv("./Result/DavidsonsInventory.csv", dtype={'UPC': str, 'Total': int, 'Dealer Price': float, 'Sale Price': float})
+df2 = pd.read_csv("./Result/SportsSouthInventory.csv", dtype={'UPC': str, 'Q': int, 'P': float})
+df3 = pd.read_csv("./Result/ZandersInventory.csv", dtype={'upc': str, 'price1': float, 'available': int})
+df4 = pd.read_csv("./Result/Lipseys.csv", dtype={'upc': str, 'quantity': int, 'currentPrice': float})
+df4 = df4.rename(columns={"upc": "UPC"})
 
 
-# merge all dataframes on UPC
-consolidated = pd.merge(df1, df2, on="UPC", how="outer")
-consolidated = pd.merge(consolidated, df3, on="UPC", how="outer")
-consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC", how="outer")
+# Create consolidated dataframe with all UPCs from all vendors
+consolidated = pd.concat([df1['UPC'], df2['UPC'], df3['upc'], df4['UPC']]).drop_duplicates().reset_index(drop=True).to_frame(name='UPC')
+consolidated = consolidated.loc[~consolidated["UPC"].duplicated()]
+# Merge in quantity and price information from each vendor
+consolidated = consolidated.merge(df1[['UPC', 'Total', 'Dealer Price', 'Sale Price']], on='UPC', how='left')
+consolidated = consolidated.merge(df2[['UPC', 'Q', 'P']], on='UPC', how='left')
+consolidated = consolidated.merge(df3[['upc', 'price1', 'available']], left_on='UPC', right_on='upc', how='left').drop('upc', axis=1)
+consolidated = consolidated.merge(df4[['UPC', 'quantity', 'currentPrice']], on='UPC', how='left')
 
-# replace 0 values with NaNs
-consolidated = consolidated.replace(0.0, np.nan)
-
-# fill NaNs with 0
-consolidated.fillna(0, inplace=True)
-
-# rename columns
+# Rename columns
 consolidated = consolidated.rename(columns={
-    "Total": "D-Q",
-    "Dealer Price": "D-P",
-    "Sale Price": "D-S",
-    "Q": "S-Q",
-    "P": "S-P",
-    "price1": "Z-P",
-    "available": "Z-Q",
-    "quantity": "L-Q",
-    "price": "L-P"
+    'Total': 'D-Q',
+    'Dealer Price': 'D-P',
+    'Sale Price': 'D-SP',
+    'Q': 'S-Q',
+    'P': 'S-P',
+    'price1': 'Z-P',
+    'available': 'Z-Q',
+    'quantity': 'L-Q',
+    'currentPrice': 'L-P'
 })
+# Remove duplicate UPCs
+consolidated = consolidated.loc[~consolidated["UPC"].duplicated()]
 
-# change data types of quantity columns to int
-consolidated[['D-Q', 'S-Q', 'Z-Q', 'L-Q']] = consolidated[['D-Q', 'S-Q', 'Z-Q', 'L-Q']].astype(int)
+# Convert quantity columns to numeric
+qty_cols = ['D-Q', 'S-Q', 'Z-Q', 'L-Q']
+consolidated[qty_cols] = consolidated[qty_cols].apply(pd.to_numeric, errors='coerce')
 
-# create a new column 'Best Price' with the lowest available price between all suppliers
-consolidated['Best Price'] = consolidated[['D-P', 'S-P', 'Z-P', 'L-P']].min(axis=1)
+# Remove rows with missing UPC values
+consolidated = consolidated.dropna(subset=["UPC"])
 
-# create a new column 'Supplier' with the name of the supplier that has the lowest available price
-consolidated['Supplier'] = consolidated[['D-P', 'S-P', 'Z-P', 'L-P']].idxmin(axis=1)
-consolidated['Supplier'] = consolidated['Supplier'].apply(lambda x: x.split()[0])
+# Add 3 additional columns: Best Price, Best Price Vendor and Best Price Quantity
+min_cols = ['D-P', 'D-SP', 'S-P', 'Z-P', 'L-P']
+consolidated['Best Price'] = consolidated[min_cols].min(axis=1)
 
-
-# create a new column 'Quantity Available' with the quantity available from the supplier with the lowest available price
-def get_quantity_available(row):
-    prices = {'Davidsons': row['D-P'], 'SportsSouth': row['S-P'], 'Zanders': row['Z-P'], 'Lipseys': row['L-P']}
-    quantities = {'Davidsons': row['D-Q'], 'SportsSouth': row['S-Q'], 'Zanders': row['Z-Q'], 'Lipseys': row['L-Q']}
+def best_price_vendor(row):
     min_price = row['Best Price']
-    supplier = row['Supplier']
-    qty_available = quantities[supplier]
-    if qty_available == 0:
-        qty_available = min([q for s, q in quantities.items() if prices[s] == min_price])
-    return qty_available
+    min_vendor = ''
+    for col in min_cols:
+        if row[col] == min_price:
+            vendor_col = col.split('-')[0] + '-P'
+            qty_col = col.split('-')[0] + '-Q'
+            if row[qty_col] > 0:
+                min_vendor = vendor_col.split('-')[0]
+                break
+            elif not min_vendor:
+                min_vendor = vendor_col.split('-')[0]
+    return min_vendor
 
-consolidated['Quantity Available'] = consolidated.apply(get_quantity_available, axis=1)
+consolidated['Best Price Vendor'] = consolidated.apply(best_price_vendor, axis=1)
+
+# Write the corresponding quantity to the 'Best Price Quantity' column
+def best_price_quantity(row):
+    if not all(col in row.index for col in min_cols):
+        return 0
+    vendor_qty = []
+    for col in min_cols:
+        if row[col] == row['Best Price']:
+            qty_col = col.split('-')[0] + '-Q'
+            if qty_col in consolidated.columns:
+                if row[qty_col] != 0:
+                    vendor_qty.append((col.split('-')[0], row[qty_col]))
+    if len(vendor_qty) == 0:
+        return 0
+    else:
+        vendor_qty = sorted(vendor_qty, key=lambda x: x[1])
+        return vendor_qty[0][1]
 
 
-print(consolidated.head())
+consolidated['Best Price Quantity'] = consolidated.apply(best_price_quantity, axis=1)
 
-
-consolidated.to_csv('ConsolidatedInventory.csv', index=False)
+# save new file
+consolidated['Best Price Vendor'] = consolidated['Best Price Vendor'].replace('Z', 'Zanders').replace('D', 'Davidsons').replace('S', 'SportsSouth').replace('L', 'Lipseys')
+consolidated.to_csv('./Result/ConsolidatedInventory.csv', index=False)
