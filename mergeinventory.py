@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 # read in all 4 files
 df1 = pd.read_csv("./Result/DavidsonsInventory.csv", 
@@ -33,9 +32,9 @@ consolidated = consolidated.rename(columns={
     "price": "L-P"
 })
 
-# Replace NaN with empty strings in columns ending with "Q"
+# cast columns ending with "Q" to integers
 for col in consolidated.columns:
-    if col.endswith("Q"):
-        consolidated[col] = consolidated[col].fillna('').astype(int)
+    if col.endswith('Q'):
+        consolidated[col] = consolidated[col].astype(int)
 
 print(consolidated)
