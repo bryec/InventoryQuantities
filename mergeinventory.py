@@ -42,7 +42,7 @@ consolidated = consolidated.dropna(subset=["UPC"])
 # Add 3 additional columns: Best Price, Best Price Vendor and Best Price Quantity
 min_cols = ['D-P', 'D-SP', 'S-P', 'Z-P', 'L-P']
 consolidated['Best Price'] = consolidated[min_cols].min(axis=1)
-
+print(consolidated)
 def best_price_vendor(row):
     min_price = row['Best Price']
     min_vendor = ''
