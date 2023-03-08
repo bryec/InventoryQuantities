@@ -30,3 +30,5 @@ rm ./DavidsonsInventory.csv
 rm ./SportsSouthInventory.xml
 rm ./ZandersInventory.csv
 rm ./zandersinv.csv
+
+cp ./Result/ConsolidatedInventory.csv /var/www/html/wp-content/uploads/wpallimport/files/
