@@ -53,7 +53,11 @@ def best_price_vendor(row):
     return 'Davidsons'
 
 grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
-print(grouped.head(200))
+# Set the maximum number of rows displayed to 200
+pd.set_option('display.max_rows', 200)
+
+# Print the entire dataframe
+print(grouped)
 
 
 
