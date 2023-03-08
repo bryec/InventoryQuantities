@@ -37,29 +37,23 @@ consolidated[cols_to_int] = consolidated[cols_to_int].astype(int)
 grouped = consolidated.groupby('UPC', as_index=False).agg({'Total': 'max', 'Dealer Price': 'min', 'Sale Price': 'min', 'Q': 'max', 'P': 'min', 'available': 'max', 'price1': 'min', 'quantity': 'max', 'price': 'min'})
 
 
-# determine which vendor has the lowest price for each UPC
-min_cols = ['Dealer Price', 'Sale Price', 'P', 'price1', 'price']
-grouped['Best Price'] = grouped[min_cols].min(axis=1)
+# Determine which vendor has the lowest price for each UPC
+grouped['Best Price'] = grouped[['Sale Price', 'P', 'price1', 'price']].replace(0.0, np.nan).min(axis=1)
 
 def best_price_vendor(row):
-    best_price = row['Best Price']
-    if best_price == 0:
+    if row['Sale Price'] == row['Best Price']:
         return 'Davidsons'
-    elif best_price == row['Dealer Price']:
-        return 'Davidsons'
-    elif best_price == row['Sale Price']:
-        return 'Davidsons'
-    elif best_price == row['P']:
+    elif row['P'] == row['Best Price']:
         return 'SportsSouth'
-    elif best_price == row['price1']:
+    elif row['price1'] == row['Best Price']:
         return 'Zanders'
-    elif best_price == row['price']:
+    elif row['price'] == row['Best Price']:
         return 'Lipseys'
-    else:
-        return 'Davidsons'
+    return 'Davidsons'
 
 grouped['Best Price Vendor'] = grouped.apply(best_price_vendor, axis=1)
 print(grouped.head(20))
+
 # determine the quantity of the lowest price
 def best_price_quantity(row):
     for col in min_cols:
