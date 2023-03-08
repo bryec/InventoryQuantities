@@ -15,6 +15,8 @@ consolidated = pd.merge(consolidated, df4.rename(columns={"upc":"UPC"}), on="UPC
 # remove rows with NaN UPC
 consolidated.dropna(subset=['UPC'], inplace=True)
 
+print(consolidated.head(20))
+
 # fill NaN values in quantity and price columns with 0
 cols_to_fill = ['Total', 'Dealer Price', 'Sale Price', 'Q', 'P', 'available', 'price1', 'quantity', 'price']
 consolidated[cols_to_fill] = consolidated[cols_to_fill].fillna(0)
