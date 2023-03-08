@@ -47,7 +47,7 @@ def best_price_vendor(row):
             if col == 'Dealer Price':
                 return 'Davidsons'
             elif col == 'Sale Price':
-                return 'Davidsons'
+                return 'SportsSouth'
             elif col == 'P':
                 return 'SportsSouth'
             elif col == 'price1':
